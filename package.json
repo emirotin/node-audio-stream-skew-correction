@@ -4,14 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  	"start": "node index",
+    "start": "node index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Petros Angelatos",
   "dependencies": {
+    "coffee-script": "^1.7.1",
     "lame": "^1.0.3",
     "speaker": "0.0.10",
-    "through": "^2.3.4",
-    "coffee-script": "^1.7.1"
+    "through2": "^0.4.1"
   }
 }

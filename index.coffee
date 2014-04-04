@@ -1,6 +1,6 @@
 fs = require 'fs'
 Lame = require 'lame'
-through = require 'through'
+through2 = require 'through2'
 Speaker = require 'speaker'
 
 timeKeeper = ->
@@ -13,7 +13,7 @@ timeKeeper = ->
 	start = null
 
 	# The actual stream processing function
-	return through (chunk) ->
+	return through2 (chunk, enc, callback) ->
 		# Initialise start the at the first chunk of data
 		if start is null then start = Date.now()
 
@@ -22,7 +22,8 @@ timeKeeper = ->
 
 		diffBytes = actualBytes - idealBytes
 		actualBytes += chunk.length
-		console.log('Time deviation:', (diffBytes / 44.1 / 2 / 2).toFixed(2) + 'ms')
+		setImmediate ->
+			console.log('Time deviation:', (diffBytes / 44.1 / 2 / 2).toFixed(2) + 'ms')
 
 		# The buffer size should be a multiple of 4
 		diffBytes = diffBytes - (diffBytes % 4)
@@ -31,11 +32,13 @@ timeKeeper = ->
 		if -EPSILON_BYTES < diffBytes < EPSILON_BYTES
 			correctedChunk = chunk
 		else
-			console.log('Epsilon exceeded! correcting')
+			setImmediate ->
+				console.log('Epsilon exceeded! correcting')
 			correctedChunk = new Buffer(chunk.length + diffBytes)
 			chunk.copy(correctedChunk)
 
-		@emit('data', correctedChunk)
+		@push(correctedChunk)
+		callback()
 
 
 # Play a demo song
