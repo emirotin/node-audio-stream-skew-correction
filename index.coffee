@@ -1,48 +1,58 @@
 fs = require 'fs'
 Lame = require 'lame'
-through2 = require 'through2'
 Speaker = require 'speaker'
+through2 = require 'through2'
 
-timeKeeper = ->
-	# Maximum accepted deviation from ideal timing
-	EPSILON_MS = 20
-	EPSILON_BYTES = EPSILON_MS * 44.1 * 2 * 2
+CHANNELS = 2
+BIT_DEPTH = 16
+RATE = 44100
+MUL = RATE * BIT_DEPTH / 8 * CHANNELS
 
-	# State variables
-	actualBytes = 0
-	start = null
+timeKeeper = (start) ->
+  # Maximum accepted deviation from ideal timing
+  EPSILON_MS = 20
+  EPSILON_BYTES = EPSILON_MS * MUL
 
-	# The actual stream processing function
-	return through2 (chunk, enc, callback) ->
-		# Initialise start the at the first chunk of data
-		if start is null then start = Date.now()
+  # State variables
+  actualBytes = 0
 
-		# Derive the bytes that should have been processed if there was no time skew
-		idealBytes = (Date.now() - start) * 44.1 * 2 * 2
+  # The actual stream processing function
+  return through2 (chunk, enc, callback) ->
+    now = Date.now()
+    # Initialise start the at the first chunk of data
+    if not start?
+      start = now
 
-		diffBytes = actualBytes - idealBytes
-		actualBytes += chunk.length
-		setImmediate ->
-			console.log('Time deviation:', (diffBytes / 44.1 / 2 / 2).toFixed(2) + 'ms')
+    # Derive the bytes that should have been processed if there was no time skew
+    idealBytes = (now - start) / 1000 * MUL
 
-		# The buffer size should be a multiple of 4
-		diffBytes = diffBytes - (diffBytes % 4)
+    diffBytes = actualBytes - idealBytes
+    actualBytes += chunk.length
+    setImmediate ->
+      console.log('Time deviation:', (diffBytes / MUL).toFixed(2) + 'ms')
 
-		# Only correct the stream if we're out of the EPSILON region
-		if -EPSILON_BYTES < diffBytes < EPSILON_BYTES
-			correctedChunk = chunk
-		else
-			setImmediate ->
-				console.log('Epsilon exceeded! correcting')
-			correctedChunk = new Buffer(chunk.length + diffBytes)
-			chunk.copy(correctedChunk)
+    # The buffer size should be a multiple of 4
+    diffBytes = diffBytes - (diffBytes % 4)
 
-		@push(correctedChunk)
-		callback()
+    # Only correct the stream if we're out of the EPSILON region
+    if -EPSILON_BYTES < diffBytes < EPSILON_BYTES
+      correctedChunk = chunk
+    else
+      setImmediate ->
+        console.log('Epsilon exceeded! correcting')
+      correctedChunk = new Buffer(chunk.length + diffBytes)
+      chunk.copy(correctedChunk)
 
+    @push(correctedChunk)
+    callback()
 
 # Play a demo song
+speaker = new Speaker
+  channels: CHANNELS
+  bitDepth: BIT_DEPTH
+  sampleRate: RATE
+
 fs.createReadStream(__dirname + '/utopia.mp3')
-	.pipe(new Lame.Decoder())
-	.pipe(timeKeeper())
-	.pipe(new Speaker())
+  .pipe(new Lame.Decoder())
+  .pipe(timeKeeper(Date.now() - 100000))
+  .pipe(speaker)
