@@ -12,6 +12,12 @@ BYTE_PER_MSEC = BYTE_PER_SEC / 1000
 EPSILON_MS = 20
 EPSILON_MS_SKIP = 1000
 
+resample = (data, addValues)->
+  correctedChunk = new Buffer(data.length + addValues)
+  correctedChunk.fill(0)
+  data.copy(correctedChunk)
+  correctedChunk
+
 timeKeeper = (start) ->
   # State variables
   actualBytes = 0
@@ -52,8 +58,7 @@ timeKeeper = (start) ->
         # The buffer size should be a multiple of 4
         diffBytes = diffBytes - (diffBytes % 4)
         console.log 'Fixing', (diffBytes / BYTE_PER_MSEC).toFixed(2), 'ms'
-        correctedChunk = new Buffer(chunk.length + diffBytes)
-        chunk.copy(correctedChunk)
+        correctedChunk = resample(chunk, diffBytes)
 
     @push(correctedChunk)
     callback()
@@ -69,5 +74,5 @@ speaker = new Speaker
 
 fs.createReadStream(__dirname + '/utopia.mp3')
   .pipe(new Lame.Decoder())
-  .pipe(timeKeeper(Date.now() - 10000)) #
+  .pipe(timeKeeper(Date.now())) #
   .pipe(speaker)
