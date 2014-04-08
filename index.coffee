@@ -14,12 +14,17 @@ EPSILON_MS = 20
 EPSILON_BYTES = EPSILON_MS * BYTE_PER_MSEC
 
 resample = (chunk, newLength) ->
+  # 1 — do not change
   return chunk
 
+  # 2 - original method, pad / drop
   # correctedChunk = new Buffer(newLength)
   # correctedChunk.fill(0)
   # chunk.copy(correctedChunk)
   # return correctedChunk
+
+
+  # 3 - linear interpolation
 
   if newLength <= 0
     return new Buffer(0)
