@@ -12,8 +12,6 @@
     "coffee-script": "^1.7.1",
     "lame": "^1.0.3",
     "speaker": "0.0.10",
-    "throttle": "^1.0.3",
-    "through2": "^0.4.1",
-    "through2-map": "^1.2.1"
+    "through": "^2.3.4"
   }
 }

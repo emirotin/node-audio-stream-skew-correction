@@ -1,9 +1,7 @@
 fs = require 'fs'
 Lame = require 'lame'
 Speaker = require 'speaker'
-through2 = require 'through2'
-through2Map = require("through2-map")
-Throttle = require('throttle')
+through = require 'through'
 
 CHANNELS = 2
 BIT_DEPTH = 16
@@ -16,30 +14,17 @@ EPSILON_MS = 20
 EPSILON_BYTES = EPSILON_MS * BYTE_PER_MSEC
 
 resample = (chunk, newLength) ->
-  correctedChunk = new Buffer(newLength)
-  correctedChunk.fill(0)
-  chunk.copy(correctedChunk)
-  return correctedChunk
+  return chunk
+
+  # correctedChunk = new Buffer(newLength)
+  # correctedChunk.fill(0)
+  # chunk.copy(correctedChunk)
+  # return correctedChunk
 
   if newLength <= 0
     return new Buffer(0)
 
   chunkLength = chunk.length
-  ###
-  # separate channels and convert bytes to ints
-  channels = (new Int16Array(chunkLength / 4) for i in [0...CHANNELS])
-  for j in [0...chunkLength / 4]
-    for i in [0...CHANNELS]
-      channels[i][j] = chunk.readInt16LE((j * 2 + i) * 2)
-
-  # recombine
-  newChunk = new Buffer(chunkLength)
-  for j in [0...chunkLength / 4]
-    for i in [0...CHANNELS]
-      newChunk.writeInt16LE(channels[i][j], (j * 2 + i) * 2)
-
-  newChunk
-  ###
 
   n = chunkLength / 4 - 1
   m = newLength / 4 - 1
@@ -59,38 +44,34 @@ resample = (chunk, newLength) ->
 
   newChunk
 
-
 timeKeeper = (start) ->
-  # State variables
   actualBytes = 0
 
-  # The actual stream processing function
-  return through2 (chunk, enc, callback) ->
+  return through (chunk) ->
     now = Date.now()
     # Initialise start at the first chunk of data
-    start or= now
+    if not start?
+      start = now
 
     # Derive the bytes that should have been processed if there was no time skew
     idealBytes = (now - start) * BYTE_PER_MSEC
 
     diffBytes = actualBytes - idealBytes
+    chunkLength = chunk.length
+    actualBytes += chunkLength
+    console.log('Time deviation:', (diffBytes / BYTE_PER_MSEC).toFixed(2) + 'ms')
 
-    diffMsec = diffBytes / BYTE_PER_MSEC
-    console.log('Time deviation:', diffMsec.toFixed(2) + 'ms')
+    # The buffer size should be a multiple of 4
+    diffBytes = diffBytes - (diffBytes % 4)
 
     # Only correct the stream if we're out of the EPSILON region
-    if Math.abs(diffMsec) < EPSILON_MS
+    if -EPSILON_BYTES < diffBytes < EPSILON_BYTES
       correctedChunk = chunk
     else
       console.log('Epsilon exceeded! correcting')
-      diffBytes = diffBytes - (diffBytes % 4)
       correctedChunk = resample(chunk, chunk.length + diffBytes)
-      console.log chunk.length, correctedChunk.length
 
-    @push(correctedChunk)
-    callback()
-
-    actualBytes += chunk.length
+    @queue(correctedChunk)
 
 # Play a demo song
 speaker = new Speaker
@@ -98,9 +79,8 @@ speaker = new Speaker
   bitDepth: BIT_DEPTH
   sampleRate: RATE
 
-
 start = Date.now() - 10000
 fs.createReadStream(__dirname + '/utopia.mp3')
   .pipe(new Lame.Decoder())
-  .pipe(timeKeeper(start))
+  .pipe(timeKeeper())
   .pipe(speaker)
