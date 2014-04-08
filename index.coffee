@@ -8,16 +8,16 @@ BIT_DEPTH = 16
 FRAME_SIZE = BIT_DEPTH / 8 * CHANNELS
 RATE = 44100
 BYTE_PER_SEC = RATE * FRAME_SIZE
-BYTE_PER_MSEC = RATE / 1000
+BYTE_PER_MSEC = BYTE_PER_SEC / 1000
 # Maximum accepted deviation from ideal timing
 EPSILON_MS = 20
 EPSILON_BYTES = EPSILON_MS * BYTE_PER_MSEC
 
 resample = (chunk, newLength) ->
   # 1 — do not change
-  return chunk
+  # return chunk
 
-  # 2 - original method, pad / drop
+  #2 - original method, pad / drop
   # correctedChunk = new Buffer(newLength)
   # correctedChunk.fill(0)
   # chunk.copy(correctedChunk)
@@ -77,6 +77,7 @@ timeKeeper = (start) ->
       correctedChunk = resample(chunk, chunk.length + diffBytes)
 
     @queue(correctedChunk)
+
 
 # Play a demo song
 speaker = new Speaker
