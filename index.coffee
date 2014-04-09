@@ -49,8 +49,10 @@ resample = (chunk, newLength) ->
 
   newChunk
 
+
 timeKeeper = (start) ->
   actualBytes = 0
+  chunkCount = 0
 
   return through (chunk) ->
     now = Date.now()
@@ -60,6 +62,9 @@ timeKeeper = (start) ->
 
     # Derive the bytes that should have been processed if there was no time skew
     idealBytes = (now - start) * BYTE_PER_MSEC
+
+    chunkCount += 1
+    console.log "#{(now - start) / 1000 / chunkCount} chunks / sec"
 
     diffBytes = actualBytes - idealBytes
     chunkLength = chunk.length
