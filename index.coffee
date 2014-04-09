@@ -64,7 +64,7 @@ timeKeeper = (start) ->
     idealBytes = (now - start) * BYTE_PER_MSEC
 
     chunkCount += 1
-    console.log "#{(now - start) / 1000 / chunkCount} chunks / sec"
+    console.log "#{chunkCount * 1000 / (now - start)} chunks / sec"
 
     diffBytes = actualBytes - idealBytes
     chunkLength = chunk.length
