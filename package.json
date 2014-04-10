@@ -13,5 +13,8 @@
     "lame": "^1.0.3",
     "speaker": "0.0.10",
     "through": "^2.3.4"
+  },
+  "devDependencies": {
+    "browserify": "^3.40.0"
   }
 }

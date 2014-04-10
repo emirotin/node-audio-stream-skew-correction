@@ -3,7 +3,7 @@ Lame = require 'lame'
 Speaker = require 'speaker'
 through = require 'through'
 
-{interpolate} = require('./resample')
+{interpolate} = require('./lib/resample')
 
 CHANNELS = 2
 BIT_DEPTH = 16
