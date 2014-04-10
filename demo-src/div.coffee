@@ -2,7 +2,7 @@ resample = require('./resample')
 
 graph = new Rickshaw.Graph
   element: document.querySelector("#chart")
-  width: 800
+  width: 1200
   height: 400
   renderer: 'line'
   series: [{
