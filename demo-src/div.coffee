@@ -16,4 +16,11 @@ graph = new Rickshaw.Graph
     color: 'blue'
   }]
 
+
+xAxis = new Rickshaw.Graph.Axis.X
+  graph: graph
+yAxis = new Rickshaw.Graph.Axis.Y
+  graph: graph
+
 graph.render()
+#xAxis.render()
