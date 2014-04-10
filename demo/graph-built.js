@@ -1405,13 +1405,15 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
   };
 
   module.exports.interpolate = function(chunk, newLength, CHANNELS) {
-    var c, chunkLength, i, interpolated, k, m, mu, n, newChunk, t, xNext, xPrev, z, _i, _j;
+    var FRAME_SIZE, SAMPLE_SIZE, c, chunkLength, i, interpolated, k, m, mu, n, newChunk, t, xNext, xPrev, z, _i, _j;
     if (newLength <= 0) {
       return new Buffer(0);
     }
+    SAMPLE_SIZE = 2;
+    FRAME_SIZE = SAMPLE_SIZE * CHANNELS;
     chunkLength = chunk.length;
-    n = chunkLength / 4 - 1;
-    m = newLength / 4 - 1;
+    n = chunkLength / FRAME_SIZE - 1;
+    m = newLength / FRAME_SIZE - 1;
     newChunk = new Buffer(newLength);
     z = 0;
     for (i = _i = 0; 0 <= m ? _i < m : _i > m; i = 0 <= m ? ++_i : --_i) {
@@ -1419,14 +1421,14 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
       k = t * n | 0;
       mu = t * n - k;
       for (c = _j = 0; 0 <= CHANNELS ? _j < CHANNELS : _j > CHANNELS; c = 0 <= CHANNELS ? ++_j : --_j) {
-        xPrev = chunk.readInt16LE((k * 2 + c) * 2);
-        xNext = chunk.readInt16LE(((k + 1) * 2 + c) * 2);
+        xPrev = chunk.readInt16LE(k * FRAME_SIZE + c * SAMPLE_SIZE);
+        xNext = chunk.readInt16LE((k + 1) * FRAME_SIZE + c * SAMPLE_SIZE);
         interpolated = xNext * mu + xPrev * (1 - mu) | 0;
         newChunk.writeInt16LE(interpolated, z);
-        z += 2;
+        z += SAMPLE_SIZE;
       }
     }
-    chunk.copy(newChunk, newLength - 4, chunkLength - 4);
+    chunk.copy(newChunk, newLength - FRAME_SIZE, chunkLength - FRAME_SIZE);
     return newChunk;
   };
 
