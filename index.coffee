@@ -28,7 +28,7 @@ timeKeeper = (start) ->
     now = Date.now()
     # Initialise start at the first chunk of data
     if not start?
-      start = now
+      start = now + 300
 
     # Derive the bytes that should have been processed if there was no time skew
     dt = now - start
@@ -44,6 +44,9 @@ timeKeeper = (start) ->
     diffMsec = diffBytes / BYTE_PER_MSEC
     console.log('Time deviation:', diffMsec.toFixed(2) + 'ms')
     divergenceLog.push(x: dt, y: diffMsec)
+
+    #diffMsec += 300
+    #diffBytes = diffMsec * BYTE_PER_MSEC
 
     # Only correct the stream if we're out of the EPSILON region
     if -EPSILON_BYTES < diffBytes < EPSILON_BYTES
