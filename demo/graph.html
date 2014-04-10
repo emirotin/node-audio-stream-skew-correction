@@ -1,8 +1,26 @@
 <!doctype html>
+<head>
+  <style>
+    body {
+      font: 14px Helvetica;
+    }
+  </style>
+</head>
+<body>
+  <script src="http://code.shutterstock.com/rickshaw/vendor/d3.v2.js"></script>
+  <script src="http://code.shutterstock.com/rickshaw/rickshaw.min.js"></script>
 
-<script src="http://code.shutterstock.com/rickshaw/vendor/d3.v2.js"></script>
-<script src="http://code.shutterstock.com/rickshaw/rickshaw.min.js"></script>
+  <div id="chart"></div>
 
-<div id="chart"></div>
+  <p style="color: red">
+    Original signal:
+    <code>Math.sqrt(i) + Math.cos(i * Math.PI / 20)</code>.
+    Sampled at 100 points and rounded to Int16.
+  </p>
 
-<script src="graph-built.js"></script>
+  <p style="color: #9cc1e0">
+    The same signal interpolated to 117 points.
+  </p>
+
+  <script src="graph-built.js"></script>
+</body>
