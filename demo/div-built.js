@@ -1332,6 +1332,8 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
     width: 1200,
     height: 400,
     renderer: 'line',
+    min: -300,
+    max: 500,
     series: [
       {
         data: require('./id.json'),

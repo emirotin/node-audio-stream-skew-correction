@@ -5,6 +5,8 @@ graph = new Rickshaw.Graph
   width: 1200
   height: 400
   renderer: 'line'
+  min: -300
+  max: 500
   series: [{
     data: require('./id.json')
     color: 'red'
