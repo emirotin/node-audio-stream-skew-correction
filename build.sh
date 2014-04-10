@@ -10,6 +10,8 @@ do
   $coffee -o tmp -c $f
 done
 
+cp graph-data/*.json tmp/
+
 for f in $BROWSERIFY_FILES
 do
   $browserify tmp/$f.js > demo/$f-built.js
