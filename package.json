@@ -10,6 +10,10 @@
   "author": "Petros Angelatos",
   "dependencies": {
     "coffee-script": "^1.7.1",
+    "enchilada": "^0.8.0",
+    "engine.io": "^1.0.5",
+    "engine.io-client": "^1.0.5",
+    "express": "^4.0.0",
     "lame": "^1.0.3",
     "speaker": "0.0.10",
     "through": "^2.3.4"

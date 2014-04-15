@@ -11,7 +11,7 @@ graph = new Rickshaw.Graph
     data: require('./id.json')
     color: 'red'
   }, {
-    data: require('./zero.json')
+    data: require('./zeropad.json')
     color: 'green'
   }, {
     data: require('./interpolate.json')

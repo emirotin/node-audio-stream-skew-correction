@@ -1,13 +1,10 @@
 #!/bin/sh
-MODES="id zero interpolate"
+MODES="id zeropad interpolate"
 coffee=./node_modules/.bin/coffee
 
-rm tmp/*.json
-rm -rf graph-data
+mkdir graph-data
 for m in $MODES
 do
+  rm graph-data/$m.json
   $coffee index.coffee $m
 done
-
-mkdir graph-data
-cp tmp/*.json graph-data/
