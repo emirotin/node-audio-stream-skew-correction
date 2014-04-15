@@ -78,7 +78,7 @@ module.exports = class Player extends EventEmitter2
     if not isKnownType
       resampleType = 'id'
 
-    divergenceFile = "../graph-data/#{resampleType}.json"
+    divergenceFile = "/../graph-data/#{resampleType}.json"
     divergenceLog = []
     timeKeeper = new TimeKeeper(resampleType, start)
 

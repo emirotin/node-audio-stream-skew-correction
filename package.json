@@ -11,6 +11,7 @@
   "dependencies": {
     "async": "^0.7.0",
     "coffee-script": "^1.7.1",
+    "d3": "^3.4.5",
     "ejs": "^1.0.0",
     "enchilada": "^0.8.0",
     "engine.io": "^1.0.5",
