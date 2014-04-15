@@ -9,14 +9,20 @@
   },
   "author": "Petros Angelatos",
   "dependencies": {
+    "async": "^0.7.0",
     "coffee-script": "^1.7.1",
+    "ejs": "^1.0.0",
     "enchilada": "^0.8.0",
     "engine.io": "^1.0.5",
     "engine.io-client": "^1.0.5",
+    "eventemitter2": "^0.4.13",
     "express": "^4.0.0",
+    "freeport": "^1.0.2",
     "lame": "^1.0.3",
+    "openurl": "^1.1.0",
     "speaker": "0.0.10",
-    "through": "^2.3.4"
+    "through": "^2.3.4",
+    "through2-map": "^1.2.1"
   },
   "devDependencies": {
     "browserify": "^3.40.0"
