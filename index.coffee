@@ -28,7 +28,7 @@ timeKeeper = (start) ->
     now = Date.now()
     # Initialise start at the first chunk of data
     if not start?
-      start = now + 300
+      start = now# - 300
 
     # Derive the bytes that should have been processed if there was no time skew
     dt = now - start
@@ -41,10 +41,10 @@ timeKeeper = (start) ->
     chunkLength = chunk.length
     actualBytes += chunkLength
 
+
     diffMsec = diffBytes / BYTE_PER_MSEC
     console.log('Time deviation:', diffMsec.toFixed(2) + 'ms')
     divergenceLog.push(x: dt, y: diffMsec)
-
     #diffMsec += 300
     #diffBytes = diffMsec * BYTE_PER_MSEC
 
@@ -54,8 +54,8 @@ timeKeeper = (start) ->
     else
       console.log('Epsilon exceeded! correcting')
       # The buffer size should be a multiple of 4
-      diffBytes = diffBytes - (diffBytes % 4)
-      correctedChunk = resampleFn(chunk, chunk.length + diffBytes, CHANNELS)
+      diffBytes = diffBytes - (diffBytes % FRAME_SIZE)
+      correctedChunk = resampleFn(chunk, chunkLength + diffBytes, CHANNELS)
 
     @queue(correctedChunk)
 
